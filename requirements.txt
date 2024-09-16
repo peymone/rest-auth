@@ -1,0 +1,5 @@
+fastapi[standard]
+requests
+SQLAlchemy
+PyJWT
+passlib[bcrypt]
