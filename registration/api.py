@@ -17,7 +17,7 @@ class User(BaseModel):
     password: str
 
 
-@app.post('/reg', status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+@app.post('/reg')
 def register(user: User):
     """Register new User by adding to Data Base
 

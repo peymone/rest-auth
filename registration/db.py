@@ -15,7 +15,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(unique=True)
+    name: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
 
@@ -26,7 +26,7 @@ def init_db() -> None:
     Base.metadata.create_all(engine)
 
 
-def add(email: str, name: str, hashed_password: str) -> bool:
+def add(name: str, email: str, hashed_password: str) -> bool:
     """Insert new User to Data Base
 
     Args: 
@@ -45,7 +45,7 @@ def add(email: str, name: str, hashed_password: str) -> bool:
         session.add(user)
         session.commit()
 
-    except Exception:
+    except Exception as e:
 
         session.rollback()
         session.flush()
