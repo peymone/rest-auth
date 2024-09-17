@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import declarative_base, Session, Mapped, mapped_column
 
 
@@ -26,7 +26,7 @@ def init_db() -> None:
     Base.metadata.create_all(engine)
 
 
-def add(name: str, email: str, hashed_password: str) -> bool:
+def add_user(name: str, email: str, hashed_password: str) -> bool:
     """Insert new User to Data Base
 
     Args: 
@@ -52,6 +52,13 @@ def add(name: str, email: str, hashed_password: str) -> bool:
         result = False
 
     return result
+
+
+def get_password(email: str) -> tuple[str, str]:
+    statement = select(User.password).where(User.email == email)
+    user = session.execute(statement).first()
+
+    return user
 
 
 if __name__ == '__main__':
