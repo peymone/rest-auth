@@ -15,7 +15,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
+    name: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
 
@@ -39,23 +39,48 @@ def add_user(name: str, email: str, hashed_password: str) -> bool:
     """
 
     user = User(name=name, email=email, password=hashed_password)
-    result = True
+    user_id = None
 
     try:
         session.add(user)
         session.commit()
+        user_id = user.id
 
     except Exception as e:
 
         session.rollback()
         session.flush()
-        result = False
 
-    return result
+    return user_id
 
 
-def get_password(email: str) -> tuple[str, str]:
-    statement = select(User.password).where(User.email == email)
+def get_user_by_name(name: str) -> tuple[int, str, str]:
+    """Get User data from DB by name
+
+    Args:
+        name (str): user name
+
+    Returns:
+        tuple[int, str, str]: user_id, user_email, user_password
+    """
+
+    statement = select(User.id, User.email, User.password).where(User.name == name)
+    user = session.execute(statement).first()
+
+    return user
+
+
+def get_user_by_id(id: int) -> tuple[str, str, str]:
+    """Get User data from DB by id
+
+    Args:
+        id (int): user id
+
+    Returns:
+        tuple[str, str]: user_name, user_email, user_password
+    """
+
+    statement = select(User.name, User.email, User.password).where(User.id == id)
     user = session.execute(statement).first()
 
     return user
