@@ -43,6 +43,15 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def generate_token(user_data: dict) -> str:
+    """Generate JWT Token with PyJWT module
+
+    Args:
+        user_data (dict[int]): user_id
+
+    Returns:
+        str: JWT Token
+    """
+
     payload = user_data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     payload.update({'exp': expire})
@@ -52,6 +61,14 @@ def generate_token(user_data: dict) -> str:
 
 
 def verify_token(encoded_jwt: str) -> int:
+    """Verify JWT Token and return user id
+
+    Args:
+        encoded_jwt (str): JWT Token
+
+    Returns:
+        int: user id
+    """
 
     try:
 
