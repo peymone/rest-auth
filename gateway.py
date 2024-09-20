@@ -1,45 +1,77 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import requests
 import uvicorn
 
+from typing import Annotated
+from configparser import ConfigParser
+
 from models import *
 
-# Application setting - remove from here
+
 app = FastAPI()
-REGISTRATION_SERVICE_URL = 'http://localhost:8002/reg'
-AUTHENTIFICATION_SERVICE_URL = 'http://localhost:8002/auth'
+oauth2_cheme = OAuth2PasswordBearer(tokenUrl='auth')
 
 
 @app.post('/reg', status_code=status.HTTP_201_CREATED)
-def register(user: UserReg):
+async def register(user: UserReg) -> HTTPError:
     """Register user by invoking specific service via HTTP (RestAPI)"""
 
-    response = requests.post(REGISTRATION_SERVICE_URL, json=user.model_dump(), timeout=10)
+    # Send user data to registration service. Receive access_token
+    response = requests.post(REGISTRATION, json=user.model_dump(), timeout=10)
     response = response.json()
 
-    if response['result'] == 1:
-        return RedirectResponse('/auth')
-    else:
+    if response['user_id'] is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail="transaction failed when create the User")
+                            detail="transaction failed when creating a user")
+    else:
+        return RedirectResponse('/user')
 
 
 @app.post('/auth')
-def authentification(user: UserAuth):
-    """Authentificate user by invoking specific service via HTTP(RestAPI)"""
+async def authentificate(form_data: OAuth2PasswordRequestForm = Depends()) -> Token | HTTPError:
+    """Authentificate User and return JWT token"""
 
-    service_response = requests.post(AUTHENTIFICATION_SERVICE_URL, json=user.model_dump(), timeout=10)
-    service_response = service_response.json()
+    # Get user data from oauth form and send request to authentification service
+    user_data = {'name': form_data.username, 'password': form_data.password}
+    response = requests.post(AUTHENTIFICATION, json=user_data)
+    response = response.json()
 
-    if service_response['result'] == 1:
-        return {"operation result": "authentificated"}
-    elif service_response['result'] == 0:
-        return {"operation result": "incorrect password"}
+    # Get access_token and send to client
+    if response['access_token'] is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password or email")
     else:
-        return {"operation result": "user email is invalid or not exist"}
+        return response
+
+
+@app.get('/user')
+async def get_current_user(token: Annotated[str, Depends(oauth2_cheme)]) -> UserGet | HTTPError:
+    """Get current user by invoking token verifying service via HTTP(RestAPI)"""
+
+    # Verify JWT token and get user id
+    response = requests.post(TOKEN_VERIFYING, json={'access_token': token})
+    response = response.json()
+    user_id = response['user_id']
+
+    if user_id is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
+
+    # Get user data from specific service and return it
+    response = requests.get(GET_USER_DATA, params={'user_id': user_id})
+    response = response.json()
+    return response
 
 
 if __name__ == '__main__':
-    # For testing only
+
+    # Load config from settings.ini
+    config = ConfigParser()
+    config.read('settings.ini')
+
+    REGISTRATION = config['links']['REGISTRATION_SERVICE']
+    AUTHENTIFICATION = config['links']['AUTHENTIFICATION_SERVICE']
+    TOKEN_VERIFYING = config['links']['TOKEN_VERIFYING_SERVICE']
+    GET_USER_DATA = config['links']['GET_USER_DATA_SERVICE']
+
     uvicorn.run(app, host='localhost', port=8001)
