@@ -1,12 +1,15 @@
 from passlib.context import CryptContext
-import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
+import jwt
+from dotenv import load_dotenv
 
+import os
 from datetime import datetime, timedelta, timezone
 
 
-# Remove it from here
-SECRET_KEY = "some_really_secret_key"
+# Security settings
+load_dotenv()
+JWT_SECRET = os.getenv('JWT_SECRET')
 ALGHORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -55,7 +58,7 @@ def generate_token(user_data: dict) -> str:
     payload = user_data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     payload.update({'exp': expire})
-    encoded_jwt = jwt.encode(payload, SECRET_KEY, ALGHORITHM)
+    encoded_jwt = jwt.encode(payload, JWT_SECRET, ALGHORITHM)
 
     return encoded_jwt
 
@@ -72,7 +75,7 @@ def verify_token(encoded_jwt: str) -> int:
 
     try:
 
-        payload = jwt.decode(encoded_jwt, SECRET_KEY, algorithms=[ALGHORITHM])
+        payload = jwt.decode(encoded_jwt, JWT_SECRET, algorithms=[ALGHORITHM])
         user_id: int = payload.get('sub')
 
         if user_id is None:
