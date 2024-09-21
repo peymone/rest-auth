@@ -47,7 +47,7 @@ async def authentificate(form_data: OAuth2PasswordRequestForm = Depends()) -> To
 
 @app.get('/user')
 async def get_current_user(token: Annotated[str, Depends(oauth2_cheme)]) -> UserGet | HTTPError:
-    """Get current user by invoking token verifying service via HTTP(RestAPI)"""
+    """Verify JWT Token and return current logged id user"""
 
     # Verify JWT token and get user id
     response = requests.post(TOKEN_VERIFYING, json={'access_token': token})
