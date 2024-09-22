@@ -38,7 +38,7 @@ async def authentificate(form_data: OAuth2PasswordRequestForm = Depends()) -> To
     response = requests.post(AUTHENTIFICATION, json=user_data)
     response = response.json()
 
-    # Get access_token and send to client
+    # Get JWT token and send to client
     if response['access_token'] is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password or email")
     else:
@@ -60,7 +60,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_cheme)]) -> User
     # Get user data from specific service and return it
     response = requests.get(GET_USER_DATA, params={'user_id': user_id})
     response = response.json()
-    return response
+
+    if response['user_data'] is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
+    else:
+        return response
 
 
 if __name__ == '__main__':
