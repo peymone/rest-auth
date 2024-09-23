@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import requests
 import uvicorn
@@ -15,7 +14,7 @@ oauth2_cheme = OAuth2PasswordBearer(tokenUrl='auth')
 
 
 @app.post('/reg', status_code=status.HTTP_201_CREATED)
-async def register(user: UserReg) -> HTTPError:
+async def register(user: UserReg) -> dict | HTTPError:
     """Register user by invoking specific service via HTTP (RestAPI)"""
 
     # Send user data to registration service. Receive access_token
@@ -26,7 +25,7 @@ async def register(user: UserReg) -> HTTPError:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="transaction failed when creating a user")
     else:
-        return RedirectResponse('/user')
+        return {"result": "created"}
 
 
 @app.post('/auth')
