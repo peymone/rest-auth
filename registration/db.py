@@ -26,16 +26,16 @@ def init_db() -> None:
     Base.metadata.create_all(engine)
 
 
-def add_user(name: str, email: str, hashed_password: str) -> bool:
+def add_user(name: str, email: str, hashed_password: str) -> int | None:
     """Insert new User to Data Base
 
     Args: 
-        email (str): user email
         name (str): user name
+        email (str): user email
         password (str): hashed user password
 
     Returns:
-        bool: return True if data successfully added
+        int | None: return user id if data successfully added or None otherwise
     """
 
     user = User(name=name, email=email, password=hashed_password)
@@ -54,36 +54,44 @@ def add_user(name: str, email: str, hashed_password: str) -> bool:
     return user_id
 
 
-def get_user_by_name(name: str) -> tuple[int, str, str]:
+def get_user_by_name(name: str) -> tuple[int, str, str] | None:
     """Get User data from DB by name
 
     Args:
         name (str): user name
 
     Returns:
-        tuple[int, str, str]: user_id, user_email, user_password
+        tuple[int, str, str] | None: user_id, user_email, user_password OR None
     """
 
-    statement = select(User.id, User.email, User.password).where(User.name == name)
-    user = session.execute(statement).first()
+    try:  # Name can be not in DB
 
-    return user
+        statement = select(User.id, User.email, User.password).where(User.name == name)
+        user = session.execute(statement).first()
+        return tuple(user)
+
+    except TypeError:
+        return None
 
 
-def get_user_by_id(id: int) -> tuple[str, str, str]:
+def get_user_by_id(id: int) -> tuple[str, str, str] | None:
     """Get User data from DB by id
 
     Args:
         id (int): user id
 
     Returns:
-        tuple[str, str]: user_name, user_email, user_password
+        tuple[str, str, str] | None: user_name, user_email, user_password OR None
     """
 
-    statement = select(User.name, User.email, User.password).where(User.id == id)
-    user = session.execute(statement).first()
+    try:  # ID can be not in DB
 
-    return user
+        statement = select(User.name, User.email, User.password).where(User.id == id)
+        user = session.execute(statement).first()
+        return tuple(user)
+
+    except TypeError:
+        return None
 
 
 if __name__ == '__main__':

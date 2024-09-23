@@ -1,4 +1,5 @@
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 import jwt
 from dotenv import load_dotenv
@@ -41,8 +42,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         bool: return True if password is verified
     """
 
-    result = crypt_context.verify(plain_password, hashed_password)
-    return result
+    try:
+        result = crypt_context.verify(plain_password, hashed_password)
+        return result
+    except UnknownHashError:
+        return False
 
 
 def generate_token(user_data: dict) -> str:
@@ -63,14 +67,14 @@ def generate_token(user_data: dict) -> str:
     return encoded_jwt
 
 
-def verify_token(encoded_jwt: str) -> int:
+def verify_token(encoded_jwt: str) -> tuple:
     """Verify JWT Token and return user id
 
     Args:
         encoded_jwt (str): JWT Token
 
     Returns:
-        int: user id
+        tuple: user id, details message
     """
 
     try:
@@ -79,14 +83,12 @@ def verify_token(encoded_jwt: str) -> int:
         user_id: int = payload.get('sub')
 
         if user_id is None:
-            return 0
+            return (0, "token data is corrupted")
 
-        return user_id
+        return (user_id, 'token is verified')
 
     except InvalidTokenError:
-        print("Token data is carrupted")
-        return 0
+        return (0, "token data is corrupted")
 
     except ExpiredSignatureError:
-        print("Token is expired")
-        return 0
+        return (0, "token is expired")
