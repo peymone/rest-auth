@@ -1,8 +1,8 @@
 import unittest
 from os import remove
 
-from registration.db import engine, session
-from registration.db import init_db, add_user, get_user_by_name, get_user_by_id
+from app.db import engine, session
+from app.db import init_db, add_user, get_user_by_name, get_user_by_id
 
 
 class TestDB(unittest.TestCase):
@@ -53,3 +53,7 @@ class TestDB(unittest.TestCase):
         self.assertIsNone(get_user_by_id(99999999999123))
         self.assertIsInstance(get_user_by_id(2), tuple)
         self.assertEqual(get_user_by_id(1), self.select_byId)
+
+
+if __name__ == '__main__':
+    unittest.main()

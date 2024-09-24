@@ -3,8 +3,8 @@ from starlette.testclient import TestClient
 from os import remove
 import unittest
 
-from registration.api import app
-from registration.db import engine, session, init_db
+from app.api import app
+from app.db import engine, session, init_db
 
 
 class TestApi(unittest.TestCase):

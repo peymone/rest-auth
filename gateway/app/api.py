@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import requests
-import uvicorn
 
 from typing import Annotated
 from configparser import ConfigParser
@@ -9,6 +8,16 @@ from configparser import ConfigParser
 from models import *
 
 
+# Load data from config
+config = ConfigParser()
+config.read('../settings.ini')
+
+REGISTRATION = config['links']['REGISTRATION_SERVICE']
+AUTHENTIFICATION = config['links']['AUTHENTIFICATION_SERVICE']
+TOKEN_VERIFYING = config['links']['TOKEN_VERIFYING_SERVICE']
+GET_USER_DATA = config['links']['GET_USER_DATA_SERVICE']
+
+# Setup application
 app = FastAPI()
 oauth2_cheme = OAuth2PasswordBearer(tokenUrl='auth')
 
@@ -64,17 +73,3 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_cheme)]) -> User
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
     else:
         return response
-
-
-if __name__ == '__main__':
-
-    # Load config from settings.ini
-    config = ConfigParser()
-    config.read('settings.ini')
-
-    REGISTRATION = config['links']['REGISTRATION_SERVICE']
-    AUTHENTIFICATION = config['links']['AUTHENTIFICATION_SERVICE']
-    TOKEN_VERIFYING = config['links']['TOKEN_VERIFYING_SERVICE']
-    GET_USER_DATA = config['links']['GET_USER_DATA_SERVICE']
-
-    uvicorn.run(app, host='localhost', port=8001)

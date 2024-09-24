@@ -1,5 +1,5 @@
 import unittest
-from registration.security import hash_password, verify_password, generate_token, verify_token
+from app.security import hash_password, verify_password, generate_token, verify_token
 
 
 class TestSecurity(unittest.TestCase):
@@ -30,3 +30,7 @@ class TestSecurity(unittest.TestCase):
         self.assertIsInstance(verify_token(test_token), tuple)
         self.assertEqual(verify_token(test_token), self.jwt_verified)
         self.assertEqual(verify_token(corrupred_token), self.jwt_corrupted)
+
+
+if __name__ == '__main__':
+    unittest.main()
