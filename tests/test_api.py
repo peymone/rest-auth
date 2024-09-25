@@ -1,10 +1,13 @@
+# Third-Party Libraries
 from starlette.testclient import TestClient
 
-from os import remove
+# BuiltIn Libraries
 import unittest
+from os import remove
 
-from app.api import app
-from app.db import engine, session, init_db
+# My Modules
+from registration.app.api import app
+from registration.app.db import engine, session, init_db
 
 
 class TestApi(unittest.TestCase):

@@ -1,3 +1,4 @@
+# Third-Party Libraries
 from pydantic import BaseModel
 
 
@@ -19,9 +20,9 @@ class UserAuth(BaseModel):
 class UserGet(BaseModel):
     """User data model for getting data"""
 
-    id: int
-    name: str
-    email: str
+    id: int = None
+    name: str = None
+    email: str = None
 
 
 class Token(BaseModel):

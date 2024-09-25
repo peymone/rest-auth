@@ -1,5 +1,8 @@
+# BuiltIn Libraries
 import unittest
-from app.security import hash_password, verify_password, generate_token, verify_token
+
+# My Modules
+from registration.app.security import hash_password, verify_password, generate_token, verify_token
 
 
 class TestSecurity(unittest.TestCase):
