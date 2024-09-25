@@ -1,8 +1,10 @@
-import unittest
+# BuiltIn Libraries
 from os import remove
+import unittest
 
-from app.db import engine, session
-from app.db import init_db, add_user, get_user_by_name, get_user_by_id
+# My Modules
+from registration.app.db import init_db, add_user, get_user_by_name, get_user_by_id
+from registration.app.db import engine, session
 
 
 class TestDB(unittest.TestCase):
