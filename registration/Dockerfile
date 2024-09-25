@@ -5,7 +5,6 @@ COPY . .
 
 EXPOSE 8001
 RUN pip install --no-cache-dir -r requirements.txt
-RUN python app/db.py
-
 ENV JWT_SECRET=some_secret_value
+
 CMD ["fastapi", "run", "app/api.py", "--port", "8001"]
