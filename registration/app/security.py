@@ -3,7 +3,6 @@ from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 import jwt
-from dotenv import load_dotenv
 
 # BuiltIn Libraries
 import os
@@ -11,7 +10,6 @@ from datetime import datetime, timedelta, timezone
 
 
 # Security settings
-load_dotenv()
 JWT_SECRET = os.getenv('JWT_SECRET')
 ALGHORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
