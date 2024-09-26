@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: run unittests
         run: |
-          ls
+          ls .
           python -m unittest discover -v -s './tests' -p 'test_*.py'
       
   
