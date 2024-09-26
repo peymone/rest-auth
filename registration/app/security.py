@@ -9,12 +9,21 @@ import os
 from datetime import datetime, timedelta, timezone
 
 
-# Security settings
-JWT_SECRET = os.getenv('JWT_SECRET')
-ALGHORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+def configurate_security() -> tuple:
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    ALGHORITHM = "HS256"
+    JWT_SECRET = os.getenv('JWT_SECRET')
 
-crypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+   # For tests running
+    if JWT_SECRET is None:
+        JWT_SECRET = 'some_secret_jwt_key'
+
+    crypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+
+    return JWT_SECRET, ALGHORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, crypt_context
+
+
+JWT_SECRET, ALGHORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, crypt_context = configurate_security()
 
 
 def hash_password(password: str) -> str:
