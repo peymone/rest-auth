@@ -34,6 +34,6 @@ jobs:
     steps:
       - name: run unittests
         working-directory: ./
-        run: python -m unittest discover -v 'tests/' 'test_*.py'
+        run: python -m unittest discover -v -s ./tests  -p 'test_*.py'
       
   
