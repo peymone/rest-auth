@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          path: rest-auth 
         
       - name: Setup Python
         uses: actions/setup-python@v5.2.0
@@ -29,12 +27,12 @@ jobs:
             python -m pip install --upgrade pip
             pip install -r requirements.txt
 
-
   test:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - name: print directory
+        working-directory: rest-auth
         run: ls
       - name: run unittests
         run: python -m unittest discover -v -s './tests' -p 'test_*.py'
