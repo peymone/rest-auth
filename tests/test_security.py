@@ -24,7 +24,7 @@ class TestSecurity(unittest.TestCase):
 
     def test_generate_token(self):
         self.assertIsInstance(generate_token(self.jwt_payload), str)
-        self.assertRegexpMatches(generate_token(self.jwt_payload), r"(^[\w-]*\.[\w-]*\.[\w-]*$)")
+        self.assertRegex(generate_token(self.jwt_payload), r"(^[\w-]*\.[\w-]*\.[\w-]*$)")
 
     def test_verify_token(self):
         test_token = generate_token(self.jwt_payload)
