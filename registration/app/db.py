@@ -2,6 +2,8 @@
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import declarative_base, Session, Mapped, mapped_column
 
+# BuiltIn modules
+from os import path
 
 # Configurate data base
 DATABASE_URL = 'sqlite:///users.db'
@@ -24,7 +26,10 @@ class User(Base):
 def init_db() -> None:
     """Create Data Base"""
 
-    Base.metadata.create_all(engine)
+    if path.exists('users.db') is True:
+        pass
+    else:
+        Base.metadata.create_all(engine)
 
 
 def add_user(name: str, email: str, hashed_password: str) -> int | None:
