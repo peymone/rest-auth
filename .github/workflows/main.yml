@@ -31,9 +31,8 @@ jobs:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
-      - name: print directory
-        working-directory: rest-auth
-        run: ls
+      - name: XDTesting Print Directory Structure
+        uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
       - name: run unittests
         run: python -m unittest discover -v -s './tests' -p 'test_*.py'
       
