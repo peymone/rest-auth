@@ -31,3 +31,12 @@ jobs:
         run: python -m unittest discover -v -s './tests' -p 'test_*.py'
       
   
+  build:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker containers
+        run: docker-compose build
