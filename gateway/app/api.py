@@ -35,8 +35,6 @@ def load_env() -> tuple:
 
 # Load ENV variables
 REGISTRATION, AUTHENTIFICATION, TOKEN_VERIFYING, GET_USER_DATA = load_env()
-print(load_env())
-
 
 # Setup application
 app = FastAPI()
