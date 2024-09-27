@@ -2,6 +2,7 @@ version: '3'
 services:
 
   gateway:
+    image: neitendo/rest-auth-gateway
     container_name: rest-auth-gateway
     restart: always
     build: ./gateway
@@ -15,6 +16,7 @@ services:
       - 8000:8000
 
   reg:
+    image: neitendo/rest-auth-reg
     container_name: rest-auth-reg
     restart: always
     build: ./registration
