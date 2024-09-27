@@ -1,0 +1,27 @@
+version: '3'
+services:
+
+  gateway:
+    container_name: rest-auth-gateway
+    restart: always
+    build: ./gateway
+    environment:
+      - REGISTRATION_SERVICE=http://reg:8001/reg
+      - AUTHENTIFICATION_SERVICE=http://reg:8001/auth
+      - TOKEN_VERIFYING_SERVICE=http://reg:8001/verify_token
+      - GET_USER_DATA_SERVICE=http://reg:8001/user
+    command: uvicorn app.api:app --host 0.0.0.0 --port 8000
+    ports:
+      - 8000:8000
+
+  reg:
+    container_name: rest-auth-reg
+    restart: always
+    build: ./registration
+    environment:
+      - JWT_SECRET=some_secret_value
+    command: uvicorn app.api:app --host 0.0.0.0 --port 8001
+    ports:
+      - 8001:8001
+    depends_on:
+      - gateway
