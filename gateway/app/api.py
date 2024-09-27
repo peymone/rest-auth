@@ -5,20 +5,38 @@ import requests
 
 # BuiltIn Libraries
 from typing import Annotated
-from configparser import ConfigParser
+from os import getenv
 
 # My Modules
 from .models import *
 
 
-# Load data from config
-config = ConfigParser()
-config.read('settings.ini')
+def load_env() -> tuple:
+    """Load ENV variables to app"""
 
-REGISTRATION = config['links']['REGISTRATION_SERVICE']
-AUTHENTIFICATION = config['links']['AUTHENTIFICATION_SERVICE']
-TOKEN_VERIFYING = config['links']['TOKEN_VERIFYING_SERVICE']
-GET_USER_DATA = config['links']['GET_USER_DATA_SERVICE']
+    REGISTRATION = getenv('REGISTRATION_SERVICE')
+    AUTHENTIFICATION = getenv('AUTHENTIFICATION_SERVICE')
+    TOKEN_VERIFYING = getenv('TOKEN_VERIFYING_SERVICE')
+    GET_USER_DATA = getenv('GET_USER_DATA_SERVICE')
+
+    env = REGISTRATION, AUTHENTIFICATION, TOKEN_VERIFYING, GET_USER_DATA
+
+    if all(env):
+        return env
+    else:  # For run outside docker containers
+
+        REGISTRATION = 'http://localhost:8001/reg'
+        AUTHENTIFICATION = 'http://localhost:8001/auth'
+        TOKEN_VERIFYING = 'http://localhost:8001/verify_token'
+        GET_USER_DATA = 'http://localhost:8001/user'
+
+        return REGISTRATION, AUTHENTIFICATION, TOKEN_VERIFYING, GET_USER_DATA
+
+
+# Load ENV variables
+REGISTRATION, AUTHENTIFICATION, TOKEN_VERIFYING, GET_USER_DATA = load_env()
+print(load_env())
+
 
 # Setup application
 app = FastAPI()

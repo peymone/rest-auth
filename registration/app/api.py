@@ -3,12 +3,14 @@ from fastapi import FastAPI
 
 # My Modules
 from .models import *
+from .db import init_db
 from .db import add_user as add_user_to_db
 from .db import get_user_by_name, get_user_by_id
 from .security import hash_password, verify_password, generate_token, verify_token
 
-
+# Configurate app
 app = FastAPI()
+init_db()
 
 
 @app.post('/verify_token')
